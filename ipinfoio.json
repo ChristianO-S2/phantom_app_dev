@@ -63,7 +63,8 @@
           "name": "ip"
         }
       },
-      "output": []
+      "output": [],
+      "versions": "EQ(*)"
     },
     {
       "action": "geolocate ip",
