@@ -8,6 +8,8 @@
 from __future__ import print_function, unicode_literals
 
 # Phantom App imports
+import ipaddress
+
 import phantom.app as phantom
 from phantom.base_connector import BaseConnector
 from phantom.action_result import ActionResult
@@ -284,18 +286,26 @@ class IpinfoIoConnector(BaseConnector):
 
         # Required values can be accessed directly
         ip = param['ip']
-
+        try:
+            response = ipaddress.ip_address(ip).is_private
+        except ValueError as e:
+            return RetVal(
+                action_result.set_status(
+                    phantom.APP_ERROR, "Error with string. Details: {0}".format(str(e))
+                ), None
+            )
         # Optional values should use the .get() function
         # optional_parameter = param.get('optional_parameter', 'default_value')
 
         # make rest call
-        ret_val, response = self._make_rest_call(
-            '/{0}/geo'.format(ip), action_result, params=None, headers=None
-        )
+        # ret_val, response = self._make_rest_call(
+        #     '/{0}/geo'.format(ip), action_result, params=None, headers=None
+        # )
 
         if phantom.is_fail(ret_val):
             # the call to the 3rd party device or service failed, action result should contain all the error details
             # for now the return is commented out, but after implementation, return from here
+            self.save_progress("Error with the input string. Does not appear to be a valid ip address :(")
             return action_result.get_status()
 
         # Now post process the data,  uncomment code as you deem fit
@@ -305,7 +315,7 @@ class IpinfoIoConnector(BaseConnector):
 
         # Add a dictionary that is made up of the most important values from data into the summary
         summary = action_result.update_summary({})
-        summary['coordinates'] = response["loc"]
+        summary['is_private'] = response
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
