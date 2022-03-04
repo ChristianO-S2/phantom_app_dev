@@ -309,7 +309,8 @@ class IpinfoIoConnector(BaseConnector):
         # Now post process the data,  uncomment code as you deem fit
 
         # Add the response into the data section
-        action_result.add_data(isPrivate)
+        response_dict = {'is private?': isPrivate}
+        action_result.add_data(response_dict)
 
         # Add a dictionary that is made up of the most important values from data into the summary
         summary = action_result.update_summary({})
