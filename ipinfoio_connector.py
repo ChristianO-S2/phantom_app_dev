@@ -287,14 +287,11 @@ class IpinfoIoConnector(BaseConnector):
         # Required values can be accessed directly
         ip = param['ip']
         try:
-            ret_val = ipaddress.ip_address(ip).is_private
+            isPrivate = ipaddress.ip_address(ip).is_private
         except ValueError as e:
-            ret_val = False
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Error with string. Details: {0}".format(str(e))
-                ), None
-            )
+            self.save_progress("Error with the input string. Does not appear to be a valid ip address :(")
+            action_result.set_status(phantom.APP_ERROR, "Error with string. Details: {0}".format(str(e)))
+            return action_result.get_status()
         # Optional values should use the .get() function
         # optional_parameter = param.get('optional_parameter', 'default_value')
 
@@ -303,20 +300,20 @@ class IpinfoIoConnector(BaseConnector):
         #     '/{0}/geo'.format(ip), action_result, params=None, headers=None
         # )
 
-        if not phantom.is_fail(ret_val):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
-            self.save_progress("Error with the input string. Does not appear to be a valid ip address :(")
-            return action_result.get_status()
+        # if phantom.is_fail(ret_val):
+        #     # the call to the 3rd party device or service failed, action result should contain all the error details
+        #     # for now the return is commented out, but after implementation, return from here
+        #     self.save_progress("Error with the input string. Does not appear to be a valid ip address :(")
+        #     return action_result.get_status()
 
         # Now post process the data,  uncomment code as you deem fit
 
         # Add the response into the data section
-        action_result.add_data(ret_val)
+        action_result.add_data(isPrivate)
 
         # Add a dictionary that is made up of the most important values from data into the summary
         summary = action_result.update_summary({})
-        summary['is_private'] = ret_val
+        summary['is_private'] = isPrivate
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
