@@ -287,7 +287,10 @@ class IpinfoIoConnector(BaseConnector):
         # Required values can be accessed directly
         ip = param['ip']
         try:
-            isPrivate = ipaddress.ip_address(ip).is_private
+            if ipaddress.ip_address(ip).is_private:
+                response = "This IP address is private"
+            else:
+                response = "This IP address is public"
         except ValueError as e:
             self.save_progress("Error with the input string. Does not appear to be a valid ip address :(")
             action_result.set_status(phantom.APP_ERROR, "Error with string. Details: {0}".format(str(e)))
@@ -309,13 +312,11 @@ class IpinfoIoConnector(BaseConnector):
         # Now post process the data,  uncomment code as you deem fit
 
         # Add the response into the data section
-        response_dict = {'is private?': isPrivate}
-        action_result.add_data(response_dict)
+        action_result.add_data(response)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['is_private'] = isPrivate
-        self.save_progress("{}".format(isPrivate))
+        # summary = action_result.update_summary({})
+        summary = response
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         return action_result.set_status(phantom.APP_SUCCESS)
