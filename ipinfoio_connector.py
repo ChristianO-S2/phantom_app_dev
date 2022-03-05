@@ -315,8 +315,8 @@ class IpinfoIoConnector(BaseConnector):
         action_result.add_data(response)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        action_result.update_summary(response)
-        # summary['is_private'] = response
+        summary = action_result.update_summary({})
+        summary['is_private'] = response
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         return action_result.set_status(phantom.APP_SUCCESS)
