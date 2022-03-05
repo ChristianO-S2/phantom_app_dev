@@ -287,7 +287,7 @@ class IpinfoIoConnector(BaseConnector):
         # Required values can be accessed directly
         ip = param['ip']
         try:
-            if ipaddress.ip_address(ip).is_private:
+            if ipaddress.IPv4Address(ip).is_private:
                 response = "This IP address is private"
             else:
                 response = "This IP address is public"
